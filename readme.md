@@ -16,7 +16,7 @@ To build and execute the Docker image for the Segmented Cavity Detection project
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/segmented-cavity-detection.git
+   git clone https://github.com/nitou2504/segmented-cavity-detection.git
    ```
 
 2. Navigate to the project directory:
