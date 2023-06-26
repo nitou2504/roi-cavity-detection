@@ -58,7 +58,7 @@ To run the Docker image for the Segmented Cavity Detection project, follow these
 3. Run the Docker image using the following command:
 
    ```bash
-   docker run -it -e BASE_DIR=. -v .:/app --entrypoint=/bin/bash segmented-cavity-detection
+   docker run -it -e BASE_DIR=. -v .:/app segmented-cavity-detection
    ```
 
    This command executes the Docker container in interactive mode inside the project directory  `segmented-cavity-detection`. Inside the container, the base directory will be available as the `$BASE_DIR` environment variable, and you will be in the container's shell.
