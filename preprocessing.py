@@ -339,6 +339,8 @@ if __name__ == "__main__":
 
     # create and clean directories
     empty_directory(data)
+    empty_directory(train_dataset)
+    empty_directory(test_dataset)
     create_missing_folders(directories)
 
     # Preprocessing
