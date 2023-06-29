@@ -141,3 +141,5 @@ if __name__ == "__main__":
     histories_CNN, histories_DCNN1, histories_DCNN2, histories_DCNN3 = load_histories_appended('histories')
     # save plots of the mean of loss, acc and auc for all models
     save_results_plots('train_results', histories_CNN, histories_DCNN1, histories_DCNN2, histories_DCNN3)
+
+    print("Finished succesfully")

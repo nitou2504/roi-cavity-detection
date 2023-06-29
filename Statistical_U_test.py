@@ -4,6 +4,7 @@ from statistics import mean
 from scipy.stats import mannwhitneyu
 import pandas as pd
 import csv
+from constants import EPOCHS, CHECKPOINT_FREQ
 
 def check_path(filename, allowed_extensions):
     if allowed_extensions in filename:
@@ -45,8 +46,8 @@ def mann_whitney(pivot_id, pivot_model, ramining_models, Statistic_result_path, 
     
 
 if __name__ == "__main__":
-    epochs=100
-    check_freq=20
+    epochs= EPOCHS
+    check_freq= CHECKPOINT_FREQ
     print("------- Statistical test for the CNN model ----------")
     model_history_path = 'histories/CNN/'
     model_checkpoints_path = 'results/CNN_mean_checkpoints_history.csv'
@@ -82,3 +83,5 @@ if __name__ == "__main__":
     pivot_id = data.iloc[data.idxmax()["val_auc"], :]["Epochs"]
     pivot_model, ramining_models = vector_extraction(pivot_id, model_history_path, epochs)
     mann_whitney(pivot_id, pivot_model, ramining_models, Statistic_result_path, check_freq)
+
+    print("Finished succesfully")

@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import csv
 from statistics import mean, stdev
+from constants import EPOCHS
 
 def training_results(histories_path, mean_history_path, mean_checkpoints_path):
     df = list()
@@ -10,7 +11,7 @@ def training_results(histories_path, mean_history_path, mean_checkpoints_path):
     cont = 1
     f = open(mean_history_path, 'w')
     f1 = open(mean_checkpoints_path, 'w')
-    epochs = 100 #hardcoded
+    epochs = EPOCHS
     columns = ["Epochs", "loss", "std", "accuracy", "std", "precision", "std", "recall", "std", "auc", "std",
                 "val_loss", "std", "val_accuracy", "std", "val_precision", "std", "val_recall", "std", "val_auc", "std"]
     writer = csv.writer(f)
@@ -75,6 +76,12 @@ def get_statistic_pivot(histories_path, model_epoch, metric):
     
     return int(df.iloc[model_epoch, :]["Epochs"])
 
+def get_best_model_metrics(histories_path, mean_checkpoints_path, metric):
+    best_epoch = get_higher_metric_model_id(mean_checkpoints_path, metric)
+    df = pd.read_csv(mean_checkpoints_path)
+    best_model_metrics = df.loc[df['Epochs'] == best_epoch].to_dict('records')[0]
+    return best_model_metrics
+
 if __name__ == "__main__":
     CNN_histories_path = 'histories/CNN/'
     CNN_mean_history_path = 'results/CNN_mean_history.csv'
@@ -92,19 +99,21 @@ if __name__ == "__main__":
     DCNN3_mean_history_path = 'results/DCNN3_mean_history.csv'
     DCNN3_mean_checkpoints_path = 'results/DCNN3_mean_checkpoints_history.csv'
 
-    training_results(CNN_histories_path, CNN_mean_history_path, CNN_mean_checkpoints_path)
-    CNN_pivot = get_higher_metric_model_id(CNN_mean_checkpoints_path, "val_auc")
-    print('The best CNN model performance was in epoch: ', CNN_pivot)
+    CNN_best_metrics = get_best_model_metrics(CNN_histories_path, CNN_mean_checkpoints_path, "val_auc")
+    print('Metrics of the best CNN model:')
+    print(CNN_best_metrics)
 
-    training_results(DCNN1_histories_path, DCNN1_mean_history_path, DCNN1_mean_checkpoints_path)
-    DCNN1_pivot = get_higher_metric_model_id(DCNN1_mean_checkpoints_path, "val_auc")
-    print('The best DCNN1 model performance was in epoch: ', DCNN1_pivot)
+    DCNN1_best_metrics = get_best_model_metrics(DCNN1_histories_path, DCNN1_mean_checkpoints_path, "val_auc")
+    print('Metrics of the best DCNN1 model:')
+    print(DCNN1_best_metrics)
 
-    training_results(DCNN2_histories_path, DCNN2_mean_history_path, DCNN2_mean_checkpoints_path)
-    DCNN2_pivot = get_higher_metric_model_id(DCNN2_mean_checkpoints_path, "val_auc")
-    print('The best DCNN2 model performance was in epoch: ', DCNN2_pivot)
+    DCNN2_best_metrics = get_best_model_metrics(DCNN2_histories_path, DCNN2_mean_checkpoints_path, "val_auc")
+    print('Metrics of the best DCNN2 model:')
+    print(DCNN2_best_metrics)
 
-    training_results(DCNN3_histories_path, DCNN3_mean_history_path, DCNN3_mean_checkpoints_path)
-    DCNN3_pivot = get_higher_metric_model_id(DCNN3_mean_checkpoints_path, "val_auc")
-    print('The best DCNN3 model performance was in epoch: ', DCNN3_pivot)
+    DCNN3_best_metrics = get_best_model_metrics(DCNN3_histories_path, DCNN3_mean_checkpoints_path, "val_auc")
+    print('Metrics of the best DCNN3 model:')
+    print(DCNN3_best_metrics)
 
+
+    print("Finished succesfully")

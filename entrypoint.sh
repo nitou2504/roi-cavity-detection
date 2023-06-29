@@ -6,3 +6,4 @@ python training_pipeline.py > training_pipeline_output.txt
 python training_results.py > training_results_output.txt
 python trials_pipeline.py > trials_pipeline_output.txt
 python Statistical_U_test.py > statistical_u_test_output.txt
+exit

@@ -11,7 +11,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import RepeatedStratifiedKFold
-
+from constants import EPOCHS, BATCH_SIZE, REPETITION, FOLDS, CHECKPOINT_FREQ, USE_AUGMENTATION
 
 def create_directories():
     # Define directory paths
@@ -170,17 +170,17 @@ def model_callbacks(filepath):
                                     save_best_only=False, 
                                     save_weights_only=False, 
                                     mode='auto',
-                                    period=10)
+                                    period=CHECKPOINT_FREQ) # checkpoint freq
     return checkpoint
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # training the model using a repeated stratified k-fold cross-validation
 def training(dataX, dataY, num_classes, dim):
     histories_CNN, histories_DCNN1, histories_DCNN2, histories_DCNN3 = list(), list(), list(), list()
-    e = 100  # epochs
-    bs = 20  # checkpoint freq
-    repetition = 3
-    folds = 10
+    e = EPOCHS
+    bs = BATCH_SIZE
+    repetition = REPETITION
+    folds = FOLDS
 
     # Data augmentation settings
     datagen = ImageDataGenerator(
@@ -246,39 +246,52 @@ def training(dataX, dataY, num_classes, dim):
         DCNN3_checkpoint = model_callbacks(DCNN3_filepath)
         callbacks_list = [CNN_checkpoint, DCNN1_checkpoint, DCNN2_checkpoint, DCNN3_checkpoint]
 
-        # fit model with data augmentation
-        history_CNN = CNN.fit(
-            train_generator,
-            steps_per_epoch=len(trainX) // bs,
-            epochs=e,
-            validation_data=(valX, to_categorical(valY)),
-            verbose=2,
-            callbacks=[callbacks_list[0]]
-        )
-        history_DCNN1 = DCNN1.fit(
-            train_generator,
-            steps_per_epoch=len(trainX) // bs,
-            epochs=e,
-            validation_data=(valX, to_categorical(valY)),
-            verbose=2,
-            callbacks=[callbacks_list[1]]
-        )
-        history_DCNN2 = DCNN2.fit(
-            train_generator,
-            steps_per_epoch=len(trainX) // bs,
-            epochs=e,
-            validation_data=(valX, to_categorical(valY)),
-            verbose=2,
-            callbacks=[callbacks_list[2]]
-        )
-        history_DCNN3 = DCNN3.fit(
-            train_generator,
-            steps_per_epoch=len(trainX) // bs,
-            epochs=e,
-            validation_data=(valX, to_categorical(valY)),
-            verbose=2,
-            callbacks=[callbacks_list[3]]
-        )
+        if USE_AUGMENTATION:
+            # fit model with data augmentation
+            history_CNN = CNN.fit(
+                train_generator,
+                steps_per_epoch=len(trainX) // bs,
+                epochs=e,
+                validation_data=(valX, to_categorical(valY)),
+                verbose=2,
+                callbacks=[callbacks_list[0]]
+            )
+            history_DCNN1 = DCNN1.fit(
+                train_generator,
+                steps_per_epoch=len(trainX) // bs,
+                epochs=e,
+                validation_data=(valX, to_categorical(valY)),
+                verbose=2,
+                callbacks=[callbacks_list[1]]
+            )
+            history_DCNN2 = DCNN2.fit(
+                train_generator,
+                steps_per_epoch=len(trainX) // bs,
+                epochs=e,
+                validation_data=(valX, to_categorical(valY)),
+                verbose=2,
+                callbacks=[callbacks_list[2]]
+            )
+            history_DCNN3 = DCNN3.fit(
+                train_generator,
+                steps_per_epoch=len(trainX) // bs,
+                epochs=e,
+                validation_data=(valX, to_categorical(valY)),
+                verbose=2,
+                callbacks=[callbacks_list[3]]
+            )
+        else:
+            # fit model without augmentation
+
+            history_CNN = CNN.fit(trainX, to_categorical(trainY), epochs=e, batch_size=bs,
+                            validation_data=(valX, to_categorical(valY)), verbose=2, callbacks=[callbacks_list[0]])
+            history_DCNN1 = DCNN1.fit(trainX, to_categorical(trainY), epochs=e, batch_size=bs, 
+                             validation_data=(valX, to_categorical(valY)), verbose=2, callbacks=[callbacks_list[1]])
+            history_DCNN2 = DCNN2.fit(trainX, to_categorical(trainY), epochs=e, batch_size=bs, 
+                             validation_data=(valX, to_categorical(valY)), verbose=2, callbacks=[callbacks_list[2]])
+            history_DCNN3 = DCNN3.fit(trainX, to_categorical(trainY), epochs=e, batch_size=bs, 
+                             validation_data=(valX, to_categorical(valY)), verbose=2, callbacks=[callbacks_list[3]])
+
 
         # export history to csv file
         history_CNN_DF = pd.DataFrame.from_dict(history_CNN.history)
@@ -301,3 +314,5 @@ if __name__ == "__main__":
 
     # train the models
     training(trainX, trainY, num_classes, dim)
+
+    print("Finished succesfully")

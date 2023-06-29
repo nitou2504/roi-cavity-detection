@@ -364,3 +364,5 @@ if __name__ == "__main__":
     class_dict = {'no_caries': 0, 'caries': 1}
     create_dataset(processed_data, train_dataset, class_dict)
     create_dataset(test_processed_data, test_dataset, class_dict)
+
+    print("Finished succesfully")
