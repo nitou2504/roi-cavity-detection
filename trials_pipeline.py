@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import csv
 from statistics import mean, stdev
-from constants import EPOCHS
+from constants import EPOCHS, CHECKPOINT_FREQ
 
 def training_results(histories_path, mean_history_path, mean_checkpoints_path):
     df = list()
@@ -58,7 +58,7 @@ def training_results(histories_path, mean_history_path, mean_checkpoints_path):
              str(mean_val_loss), str(std_val_loss), str(mean_val_accuracy), str(std_val_accuracy), str(mean_val_precision), str(std_val_precision), 
              str(mean_val_recall), str(std_val_recall), str(mean_val_auc), str(std_val_auc)]
         writer.writerow(r)
-        if cont % 10 == 0:
+        if cont % CHECKPOINT_FREQ == 0:
             writer1.writerow(r)
         cont += 1
     f.close()
@@ -76,11 +76,29 @@ def get_statistic_pivot(histories_path, model_epoch, metric):
     
     return int(df.iloc[model_epoch, :]["Epochs"])
 
-def get_best_model_metrics(histories_path, mean_checkpoints_path, metric):
-    best_epoch = get_higher_metric_model_id(mean_checkpoints_path, metric)
+def format_table(best_epoch, mean_checkpoints_path):
+    # Read the CSV file
     df = pd.read_csv(mean_checkpoints_path)
-    best_model_metrics = df.loc[df['Epochs'] == best_epoch].to_dict('records')[0]
-    return best_model_metrics
+
+    # Filter the dataframe for the desired epoch
+    desired_row = df[df['Epochs'] == best_epoch]
+
+    # Extract the relevant metrics and their corresponding standard deviations
+    metrics = ['loss', 'accuracy', 'precision', 'recall', 'auc']
+    formatted_table = []
+    for metric in metrics:
+        metric_value = desired_row[metric].values[0]
+        std_column = desired_row.columns[desired_row.columns.get_loc(metric) + 1]
+        std_value = desired_row[std_column].values[0]
+        val_metric_value = desired_row['val_' + metric].values[0]
+        val_std_column = desired_row.columns[desired_row.columns.get_loc('val_' + metric) + 1]
+        val_std_value = desired_row[val_std_column].values[0]
+        formatted_table.append([metric, metric_value, std_value, val_metric_value, val_std_value])
+
+    # Create a new DataFrame with the formatted table
+    table_df = pd.DataFrame(formatted_table, columns=["Metric", "Value", "Std", "Validation", "Std"])
+
+    return table_df
 
 if __name__ == "__main__":
     CNN_histories_path = 'histories/CNN/'
@@ -99,21 +117,29 @@ if __name__ == "__main__":
     DCNN3_mean_history_path = 'results/DCNN3_mean_history.csv'
     DCNN3_mean_checkpoints_path = 'results/DCNN3_mean_checkpoints_history.csv'
 
-    CNN_best_metrics = get_best_model_metrics(CNN_histories_path, CNN_mean_checkpoints_path, "val_auc")
-    print('Metrics of the best CNN model:')
-    print(CNN_best_metrics)
+    training_results(CNN_histories_path, CNN_mean_history_path, CNN_mean_checkpoints_path)
+    CNN_pivot = get_higher_metric_model_id(CNN_mean_checkpoints_path, "val_auc")
+    print('The best CNN model performance was in epoch:', CNN_pivot)
+    formatted_table = format_table(CNN_pivot, CNN_mean_checkpoints_path)
+    print(formatted_table)
 
-    DCNN1_best_metrics = get_best_model_metrics(DCNN1_histories_path, DCNN1_mean_checkpoints_path, "val_auc")
-    print('Metrics of the best DCNN1 model:')
-    print(DCNN1_best_metrics)
+    training_results(DCNN1_histories_path, DCNN1_mean_history_path, DCNN1_mean_checkpoints_path)
+    DCNN1_pivot = get_higher_metric_model_id(DCNN1_mean_checkpoints_path, "val_auc")
+    print('The best DCNN1 model performance was in epoch:', DCNN1_pivot)
+    formatted_table = format_table(DCNN1_pivot, DCNN1_mean_checkpoints_path)
+    print(formatted_table)
 
-    DCNN2_best_metrics = get_best_model_metrics(DCNN2_histories_path, DCNN2_mean_checkpoints_path, "val_auc")
-    print('Metrics of the best DCNN2 model:')
-    print(DCNN2_best_metrics)
+    training_results(DCNN2_histories_path, DCNN2_mean_history_path, DCNN2_mean_checkpoints_path)
+    DCNN2_pivot = get_higher_metric_model_id(DCNN2_mean_checkpoints_path, "val_auc")
+    print('The best DCNN2 model performance was in epoch:', DCNN2_pivot)
+    formatted_table = format_table(DCNN2_pivot, DCNN2_mean_checkpoints_path)
+    print(formatted_table)
 
-    DCNN3_best_metrics = get_best_model_metrics(DCNN3_histories_path, DCNN3_mean_checkpoints_path, "val_auc")
-    print('Metrics of the best DCNN3 model:')
-    print(DCNN3_best_metrics)
+    training_results(DCNN3_histories_path, DCNN3_mean_history_path, DCNN3_mean_checkpoints_path)
+    DCNN3_pivot = get_higher_metric_model_id(DCNN3_mean_checkpoints_path, "val_auc")
+    print('The best DCNN3 model performance was in epoch:', DCNN3_pivot)
+    formatted_table = format_table(DCNN3_pivot, DCNN3_mean_checkpoints_path)
+    print(formatted_table)
 
 
     print("Finished succesfully")
