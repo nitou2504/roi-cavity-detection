@@ -102,6 +102,41 @@ def save_results_plots(output_dir, histories_CNN, histories_DCNN1, histories_DCN
         plt.savefig(filename)
         plt.close()
 
+        # Create a new figure for precision
+        plt.figure(figsize=(8, 6), dpi=400)
+
+        # Plot val_precision vs train
+        plt.plot(mean_history_df.iloc[:, 0], mean_history_df['precision'], label='train')
+        plt.plot(mean_history_df.iloc[:, 0], mean_history_df['val_precision'], label='val')
+        plt.xlabel('Epoch')
+        plt.ylabel('Precision')
+        plt.title(f'{model} Precision')
+        plt.legend()
+
+        # Save the figure
+        filename = os.path.join(output_dir, f'{model}_precision_plot.png')
+        plt.tight_layout()
+        plt.savefig(filename)
+        plt.close()
+
+        # Create a new figure for recall
+        plt.figure(figsize=(8, 6), dpi=400)
+
+        # Plot val_recall vs train
+        plt.plot(mean_history_df.iloc[:, 0], mean_history_df['recall'], label='train')
+        plt.plot(mean_history_df.iloc[:, 0], mean_history_df['val_recall'], label='val')
+        plt.xlabel('Epoch')
+        plt.ylabel('Recall')
+        plt.title(f'{model} Recall')
+        plt.legend()
+
+        # Save the figure
+        filename = os.path.join(output_dir, f'{model}_recall_plot.png')
+        plt.tight_layout()
+        plt.savefig(filename)
+        plt.close()
+
+
     # Create a new figure for Mean AUC Comparison
     plt.figure(figsize=(8, 6), dpi=400)
 

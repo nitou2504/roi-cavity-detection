@@ -4,6 +4,7 @@ import shutil
 import pandas as pd
 import cv2
 import csv
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
 from tensorflow.keras.utils import to_categorical
@@ -80,6 +81,36 @@ def load_data(data_path):
 
     return trainX, trainY, num_classes, dim
 
+# Define the F1Score metric class
+class F1Score(tf.keras.metrics.Metric):
+    def __init__(self, name='f1_score', **kwargs):
+        super(F1Score, self).__init__(name=name, **kwargs)
+        self.true_positives = self.add_weight(name='tp', initializer='zeros')
+        self.false_positives = self.add_weight(name='fp', initializer='zeros')
+        self.false_negatives = self.add_weight(name='fn', initializer='zeros')
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        y_true = tf.cast(y_true, tf.float32)
+        y_pred = tf.cast(tf.round(y_pred), tf.float32)
+
+        true_positives = tf.reduce_sum(y_true * y_pred)
+        false_positives = tf.reduce_sum((1 - y_true) * y_pred)
+        false_negatives = tf.reduce_sum(y_true * (1 - y_pred))
+
+        self.true_positives.assign_add(true_positives)
+        self.false_positives.assign_add(false_positives)
+        self.false_negatives.assign_add(false_negatives)
+
+    def result(self):
+        precision = self.true_positives / (self.true_positives + self.false_positives + tf.keras.backend.epsilon())
+        recall = self.true_positives / (self.true_positives + self.false_negatives + tf.keras.backend.epsilon())
+        f1_score = 2 * ((precision * recall) / (precision + recall + tf.keras.backend.epsilon()))
+        return f1_score
+
+    def reset_states(self):
+        self.true_positives.assign(0.0)
+        self.false_positives.assign(0.0)
+        self.false_negatives.assign(0.0)
 
 # define CNN
 def define_CNN(num_classes, dim):
@@ -215,22 +246,22 @@ def training(dataX, dataY, num_classes, dim):
         CNN.compile(
             loss='categorical_crossentropy',
             optimizer=Adam(learning_rate=0.0001),
-            metrics=['accuracy', 'Precision', 'Recall', 'AUC'],
+            metrics=['accuracy', 'Precision', 'Recall', 'AUC', F1Score()]
         )
         DCNN1.compile(
             optimizer=Adam(learning_rate=0.0001),
             loss='categorical_crossentropy',
-            metrics=['accuracy', 'Precision', 'Recall', 'AUC'],
+            metrics=['accuracy', 'Precision', 'Recall', 'AUC', F1Score()]
         )
         DCNN2.compile(
             loss='categorical_crossentropy',
             optimizer=Adam(learning_rate=0.0001),
-            metrics=['accuracy', 'Precision', 'Recall', 'AUC'],
+            metrics=['accuracy', 'Precision', 'Recall', 'AUC', F1Score()]
         )
         DCNN3.compile(
             loss='categorical_crossentropy',
             optimizer=Adam(learning_rate=0.0001),
-            metrics=['accuracy', 'Precision', 'Recall', 'AUC'],
+            metrics=['accuracy', 'Precision', 'Recall', 'AUC', F1Score()]
         )
 
         # model checkpoint
