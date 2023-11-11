@@ -1,6 +1,6 @@
-# Segmented Cavity Detection
+# ROI Cavity Detection
 
-   This project aims to showcase cavity detection on segmented periapical dental radiographs.
+   This project aims to showcase cavity detection on Regions of Interest (ROI) from periapical dental radiographs.
 
 ## Prerequisites
 
@@ -11,31 +11,31 @@ Before building and executing the Docker image, make sure you have the following
 
 ## Build and Execute the Docker Image
 
-To build and execute the Docker image for the Segmented Cavity Detection project, follow these steps:
+To build and execute the Docker image for the ROI Cavity Detection project, follow these steps:
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/nitou2504/segmented-cavity-detection.git
+   git clone https://github.com/nitou2504/roi-cavity-detection.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd segmented-cavity-detection
+   cd roi-cavity-detection
    ```
 
 3. Build the Docker image:
 
    ```bash
-   docker build -t segmented-cavity-detection .
+   docker build -t roi-cavity-detection .
    ```
 
    This may take some time as it installs the necessary dependencies.
 
 ## Run the Docker Image
 
-To run the Docker image for the Segmented Cavity Detection project, follow these steps:
+To run the Docker image for the ROI Cavity Detection project, follow these steps:
 
 1. Create a folder named `raw` in the base directory of the project.
 
@@ -58,10 +58,10 @@ To run the Docker image for the Segmented Cavity Detection project, follow these
 3. Run the Docker image using the following command:
 
    ```bash
-   docker run -it -e BASE_DIR=. -v .:/app segmented-cavity-detection
+   docker run -it -e BASE_DIR=. -v .:/app roi-cavity-detection
    ```
 
-   This command executes the Docker container in interactive mode inside the project directory  `segmented-cavity-detection`. Inside the container, the base directory will be available as the `$BASE_DIR` environment variable, and you will be in the container's shell.
+   This command executes the Docker container in interactive mode inside the project directory  `roi-cavity-detection`. Inside the container, the base directory will be available as the `$BASE_DIR` environment variable, and you will be in the container's shell.
 
    Make sure to run the docker image inside the project directory, so it can access the python scripts and image files.
 
