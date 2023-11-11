@@ -1,6 +1,9 @@
 # ROI Cavity Detection
 
    This project aims to showcase cavity detection on Regions of Interest (ROI) from periapical dental radiographs.
+   This an example radiograph with the annotated bounding boxes shown:
+
+   ![RX with caries ROIs](/example/annotated.png)
 
 ## Prerequisites
 
@@ -39,7 +42,8 @@ To run the Docker image for the ROI Cavity Detection project, follow these steps
 
 1. Create a folder named `raw` in the base directory of the project.
 
-2. Inside the `raw` folder, place the periapical dental radiographs in JPG format. Each image should be accompanied by an XML file with the same name. The XML file should be formatted as Pascal VOC XML, providing information about the objects in the image, using the classes `caries` and `no_caries`.
+2. Inside the `raw` folder, place the periapical dental radiographs in JPG format. Each image should be accompanied by an XML file with the same name. The XML file should be formatted as Pascal VOC XML, providing information about the objects in the image, using the classes `caries` and `no_caries`. There is a sample radiograph JPG along with its accompanying XML file in the 'example' folder.
+
 
    The folder structure and file format should look like this:
 
